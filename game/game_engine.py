@@ -10,6 +10,9 @@ class GameEngine:
         self.words = ["PYTHON", "PYGAME", "PLANET", "ROCKET", "GALAXY", "STREAM", "PUZZLE", "ALGORITHM"]
         self.secret_word = ""
         self.scrambled_word = ""
+        self.hint_positions = []
+        self.hint_penalty = 0
+     
 
         self.score = 0
         self.feedback_msg = "Unscramble the letters above!"
@@ -17,6 +20,7 @@ class GameEngine:
 
         self.input_box = TextBox(width // 2 - 130, 210, 160, 46)
         self.submit_btn = pygame.Rect(width // 2 + 45, 210, 95, 46)
+        self.hint_btn = pygame.Rect(width // 2 + 150, 210, 80, 46)
 
         self.font_title = pygame.font.SysFont(None, 40)
         self.font_word = pygame.font.SysFont(None, 52)
@@ -34,9 +38,23 @@ class GameEngine:
                 return shuffled
 
     def next_round(self):
-        self.secret_word = random.choice(self.words)
-        self.scrambled_word = self.scramble_string(self.secret_word)
-        self.input_box.clear()
+    self.secret_word = random.choice(self.words)
+    self.scrambled_word = self.scramble_string(self.secret_word)
+    self.input_box.clear()
+    self.hint_positions = []
+    self.hint_penalty = 0
+
+    def use_hint(self):
+     for i in range(len(self.secret_word)):
+         if i not in self.hint_positions:
+             self.hint_positions.append(i)
+             self.hint_penalty += 1
+             self.feedback_msg = f"Hint: letter {i + 1} revealed."
+             self.feedback_color = (100, 200, 255)
+             return
+
+     self.feedback_msg = "All letters are already revealed!"
+     self.feedback_color = (240, 170, 50)
 
     def submit_guess(self):
         guess = self.input_box.text.strip().upper()
